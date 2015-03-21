@@ -1,0 +1,24 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+<file alias="fastForward.svg">icons/fastForward.svg</file>
+<file alias="pause.svg">icons/pause.svg</file>
+<file alias="play.svg">icons/play.svg</file>
+<file alias="rewind.svg">icons/rewind.svg</file>
+<file alias="skipBackward.svg">icons/skipBackward.svg</file>
+<file alias="skipForward.svg">icons/skipForward.svg</file>
+<file alias="stop.svg">icons/stop.svg</file>
+<file alias="fileopen.png">icons/fileopen.png</file>
+<file alias="filequit.png">icons/filequit.png</file>
+<file alias="mid.png">icons/mid.png</file>
+<file alias="top.png">icons/top.png</file>
+<file alias="bottom.png">icons/bottom.png</file>
+<file alias="front.png">icons/front.png</file>
+<file alias="vtIcon.ico">icons/vtIcon.ico</file>
+<file alias="3D.png">icons/3D.png</file>
+<file alias="zoomIn.png">icons/zoomIn.png</file>
+<file alias="zoomOut.png">icons/zoomOut.png</file>
+<file alias="clock.png">icons/clock.png</file>
+<file alias="camera.png">icons/camera.png</file>
+<file alias="export.png">icons/export.png</file>
+</qresource>
+</RCC>
