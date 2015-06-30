@@ -85,6 +85,11 @@ class Spec(FigureCanvas):
  #       self.showPlotArea(0,1)
     
     def updateBandwidth(self,bandwidth, pos):
+        self.axes.cla()        
+        self.cursor = Cursor(self.axes, horizOn=False)
+        self.timePos = self.axes.axvline(x = 0,linewidth = 1, color = 'k')
+        self.linePos1 = None
+        self.linePos2 = None
         self.bandwidth = bandwidth
         self.NFFT = self.bw2Nfft(self.bandwidth)
         progress = QtGui.QProgressDialog("Calculating...",QtCore.QString(), 0,100,parent = self)

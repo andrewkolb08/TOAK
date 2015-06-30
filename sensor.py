@@ -67,8 +67,8 @@ class Sensor():
         #Give the min/maximum x,y,z values as return.
         #Make it a tuple with 6 values and let the other function figure out
         #What they want.
-        mins = np.array(self.intervalPoints.data).min(axis=0)
-        maxes = np.array(self.intervalPoints.data).max(axis=0)
+        mins = np.nanmin(np.array(self.intervalPoints.data),axis=0)
+        maxes = np.nanmax(np.array(self.intervalPoints.data),axis=0)
         return (tuple(mins),tuple(maxes))
     
     def velocityMag(self):

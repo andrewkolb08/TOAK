@@ -13,8 +13,9 @@ import dataController as DC
 import copy
 import fileNamingDlg as fnd
 import numpy as np
+import configDlg
 
-__version__ = "1.0.0"
+__version__ = "2.0.0"
 
 
 class MainWindow(QtGui.QMainWindow):
@@ -33,15 +34,24 @@ class MainWindow(QtGui.QMainWindow):
 #        seen.  Using the mouse buttons and scroll buttons, you can look at the sensors from any angle.  You can 
 #        also zoom in and out using the scroll wheel on the mouse, and change the focus using by holding shift and
 #        moving the mouse in the desired direction.
-#
 #        """
         super(MainWindow, self).__init__(parent)
         np.set_printoptions(precision=2, suppress=True)
         self.audiofilename = None#"C:/Data/05_ENGL_F_words6.wav"
         self.kinfilename =  None#"C:/Data/05_ENGL_F_words6_BPC.tsv"
         
-        self.dataController = DC.DataController(self.kinfilename,self.audiofilename,400)
-        self.dataController.setMinimumSize(700,700)        
+        #We should go to QSettings to load the config list instead, but this will work for now.
+        #make qvariant to pyObject.. then make it a dict.  When yous ave it, wrap it in a tuple container and unlock with [0]        
+        settings = QtCore.QSettings()
+        self.configs = settings.value("savedConfig").toPyObject()
+        self.selectConfig()   
+#       These are the parameters for the MU Speechlab
+ #       {'RASS': (100, 5,('Upper Lip','Lower Lip', 'Tongue Blade','Tongue Dorsum','Medial Incisor'),('UL','LL','TB','TD','MI')),
+ #                'DDK':  (100, 6,('Molar','Medial Incisor','Tongue Dorsum','Tongue Blade','Lower Lip','Upper Lip'),('MM','MI','TD','TB','LL','UL')),
+ #                'EMA-MAE': (400, 7,('Tongue Dorsum','Tongue Lateral','Tongue Blade','Upper Lip','Lower Lip','Lip Corner','Medial Incisor'),('TD','TL','TB','UL','LL','LC','MI'))}         
+        
+        self.dataController = DC.DataController(self.kinfilename,self.audiofilename, self.currentConfig)
+        self.dataController.setMinimumSize(700,600)        
         self.center()
 #        self.dataController.setAlignment(QtCore.Qt.AlignCenter)
 #        self.imageLabel.setContextMenuPolicy(Qt.ActionsContextMenu)
@@ -50,7 +60,7 @@ class MainWindow(QtGui.QMainWindow):
         status = self.statusBar()
         status.setSizeGripEnabled(False)
         status.showMessage("Ready", 5000)
-
+        
         fileOpenAction = self.createAction("&Open...", self.fileOpen,
                 QtGui.QKeySequence.Open, "fileopen",
                 "Open a kinematic file")
@@ -125,7 +135,16 @@ class MainWindow(QtGui.QMainWindow):
         helpMenu = self.menuBar().addMenu("&Help")
         self.addActions(helpMenu, (helpHelpAction,None))
         self.setWindowTitle("Visualization Tool")
-
+        
+    def selectConfig(self):
+        dlg = configDlg.ConfigDlg(self.configs)
+        if dlg.exec_():
+            self.configs = dlg.sendConfigs()
+            settings = QtCore.QSettings()
+            varConfigList = QtCore.QVariant(self.configs)
+            settings.setValue("savedConfig", varConfigList)
+            key, data = dlg.getData()
+        self.currentConfig = data
             
     def createAction(self, text, slot=None, shortcut=None, icon=None,
                      tip=None, checkable=False, signal="triggered()"):
@@ -156,6 +175,14 @@ class MainWindow(QtGui.QMainWindow):
             else:
                 target.addAction(action)
 
+#    def setConfig(self):
+#        dlg = configDlg.ConfigDlg(self.configList)
+#        if dlg.exec_():
+#            key, data = dlg.getData()
+#            print key
+#            print data[1]
+#            print data[2]
+        
     def fileOpen(self):
         """
             The fileOpen method allows a user to choose any file from the file path
@@ -193,13 +220,14 @@ class MainWindow(QtGui.QMainWindow):
             self.audiofilename = QtCore.QString(QtGui.QFileDialog.getOpenFileName(self,
                             "Visualization Tool - Choose Audio File", dir,
                             "WAV files (*.wav)"))
-        if (self.audiofilename is not QtCore.QString()):
+        if (self.audiofilename):
             self.dataController.onFileLoaded(unicode(self.kinfilename),unicode(self.audiofilename))
             self.updateStatus("File %s loaded" % unicode(self.kinfilename))
             self.showMidsagittalView()
             self.showTrajectory = False
             self.imageSavingDir = None
             self.textSavingDir = None
+#            self.dataController.stop()
             for action, check in self.resetableActions:
                 action.setChecked(check)
         else:

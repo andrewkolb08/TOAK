@@ -62,7 +62,7 @@ class SpecWidget(QtGui.QWidget):
         self.connect(self.freqRangeBox,QtCore.SIGNAL("valueChanged(double)"), self.changeFreqRange) 
         self.connect(self.bandwidthBox,QtCore.SIGNAL("valueChanged(int)"), self.changeBandwidth)
         
-        self.setMinimumSize(250,250)
+        self.setMinimumSize(200,200)
         self.setMaximumHeight(350)
         self.resize(250,300)
         self.zoomList = None

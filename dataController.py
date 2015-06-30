@@ -19,7 +19,7 @@ import sensorDataView as sdv
 
 
 class DataController(QtGui.QWidget):    
-    def __init__(self, kinfile, audiofile, fs, parent = None):
+    def __init__(self, kinfile, audiofile, config, parent = None):
         """
         Data Controller class receives a kinematic file, and an audiofile, and
         sets them up to be played synchronously using the visvis Figure().  
@@ -34,8 +34,6 @@ class DataController(QtGui.QWidget):
         backend = 'pyqt4'
         app = vv.use(backend)
         self.fileLoaded = False
-        self.fs = fs
-        self.numSensors = 6
         #Set up the buttons for the player
         self.playPauseButton = self.createButton(':/play.svg',50,44)
         self.stopButton = self.createButton(':/stop.svg',40,34)
@@ -44,6 +42,12 @@ class DataController(QtGui.QWidget):
         self.stepBackwardButton = self.createButton(":/skipBackward.svg",40,34)
         self.rewindButton = self.createButton(":/rewind.svg",30,24)
         
+        self.config= config
+        self.fs = self.config[0]
+        self.numSensors = self.config[1]
+        self.sensorDataFormat = [(14+9*i,21+9*i, self.config[2][i], self.config[3][i]) for i in range(self.numSensors)]
+        print self.sensorDataFormat
+        
         Figure = app.GetFigureClass()
         self.setMinimumSize(750,700)
         self.resize(750,700)
@@ -51,6 +55,7 @@ class DataController(QtGui.QWidget):
         self.fig.enableUserInteraction = False
         self.fig._widget.setMinimumSize(400,280)
         self.spectrogram = specWidget.SpecWidget()
+        self.spectrogram.setMinimumSize(400, 150)
         
         self.lcdTimer = lcd.LcdTimer()
         self.lcdTimer.setMaximumHeight(60)
@@ -101,10 +106,10 @@ class DataController(QtGui.QWidget):
         self.timer = vv.Timer(self)
         self.timer.Bind(self.onTimer)
         self.timer.nolag = True
-        self.fs = 400
         self.disableButtons()
         if((kinfile is not None) and (audiofile is  not None)):
             self.onFileLoaded(kinfile,audiofile)            
+        
         
     def onFileLoaded(self,kinfile,audiofile):  
         """
@@ -193,7 +198,7 @@ class DataController(QtGui.QWidget):
         self.spectrogram.updateTimePos(self.datavals[self.index,0])
         for DV in self.dataViewers:
             DV.updateData(self.index - self.kinInterval[0])
-        self.index +=40
+        self.index += int(self.fs/10)
         
     def setNewInterval(self,bounds):
         self.stop()
@@ -430,23 +435,24 @@ class DataController(QtGui.QWidget):
         #You can change this depending on the dataset you are using to make it show
         #other sensor configurations.  Eventually, this will go in a dialog that the user
         #can use to determine the sensor settings, and allow for saving/loading different configs.
-        sensorData = [(14,21,'Tongue Dorsum','TD'),
-                      (23,30,'Tongue Lateral','TL'),
-                      (32,39,'Tongue Blade', 'TB'),
-                      (41,48,'Upper Lip','UL'),
-                      (50,57,'Lower Lip', 'LL'),
-                      (59,66,'L', 'LC'),
-                      (68,75,'Midsagittal Incisor', 'MI')]    
+
+        #DDK Setup for subject 3 below:
+#        sensorData = [(14,21,'Molar','MM'),
+#                      (23,30,'Midsagittal Incisor','MI'),
+#                      (32,39,'Tongue Dorsum', 'TD'),
+#                      (41,48,'Tongue Blade','TB'),
+#                      (50,57,'Lower Lip', 'LL'),
+#                      (59,66,'Upper Lip', 'UL')]
                       
         #kinData, axes, name, label,
         #This should eventually get pulled out into a dialog that lets the user
         #input the format of the data.  Then they can load custom file types for display        
-        self.allSensors = [sensor.Sensor(self.datavals[:,sensorData[i][0]:sensorData[i][1]],self.axes,sensorData[i][2],sensorData[i][3],self.fs) for i in xrange(self.numSensors)]
+        self.allSensors = [sensor.Sensor(self.datavals[:,self.sensorDataFormat[i][0]:self.sensorDataFormat[i][1]],self.axes,self.sensorDataFormat[i][2],
+                                         self.sensorDataFormat[i][3],self.fs) for i in xrange(self.numSensors)]
         self.axes.SetLimits(margin = 0.9)
         self.axes.camera.zoom *=1.5
         
         lims = self.axes.GetLimits()
-        print lims
         if(abs(lims[0].max-lims[0].min) < 10):
             xmin = -60
             xmax = 10
