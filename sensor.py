@@ -48,7 +48,7 @@ class Sensor():
          
     def plotIntervalPoints(self,lowInd,highInd):
         self.l= vv.plot(self.intervalPoints, mew=0, mw=0.2 , ms='.', mec = self.color, mc = self.color, axesAdjust = False)
-        self.l.alpha = 0.1
+        self.l.alpha = 0.5
         
     def removeIntervalPoints(self):
         self.l.Destroy()

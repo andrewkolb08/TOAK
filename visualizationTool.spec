@@ -1,6 +1,6 @@
 # -*- mode: python -*-
 a = Analysis(['visualizationTool.py'],
-             pathex=['C:\\python_workspace\\TOAK'],
+             pathex=['C:\\Kolb Thesis Code\\TOAK'],
              hiddenimports=[],
              hookspath=None,
              runtime_hooks=None)

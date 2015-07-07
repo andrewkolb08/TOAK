@@ -17,21 +17,26 @@ class SensorDataWidget(QtGui.QWidget):
     def __init__(self, sensorData=None, parent = None):
         super(SensorDataWidget, self).__init__(parent)
         self.sensorData = sensorData
+        f1 = QtGui.QFont("Calibri",8)
+        f2 = QtGui.QFont("Calibri",6)
         self.nameLabel = QtGui.QLabel("<b> Sensor Data </b>")
+        self.nameLabel.setFont(f1)
         rangeLabel = QtGui.QLabel("Range (x,y,z)[mm]: ")
+        rangeLabel.setFont(f2)
         speedLabel = QtGui.QLabel("Speed [mm/s]: ")
-        accelLabel = QtGui.QLabel("Accel [mm/s^2]: ")
-        
+        speedLabel.setFont(f2)
+        accelLabel = QtGui.QLabel("Accel [mm/s^2]: ") 
+        accelLabel.setFont(f2)
         layout = QtGui.QGridLayout()
         layout.addWidget(self.nameLabel,0,0,1,3)
         layout.addWidget(rangeLabel,1,0,1,2)
-        f = QtGui.QFont("Calibri",7)
+
         self.ranges = QtGui.QLabel(str(0))
-        self.ranges.setFont(f)
+        self.ranges.setFont(f2)
         self.speed = QtGui.QLabel(str(0))
-        self.speed.setFont(f)
+        self.speed.setFont(f2)
         self.accel = QtGui.QLabel(str(0))
-        self.accel.setFont(f)
+        self.accel.setFont(f2)
         layout.addWidget(self.ranges,1,2,1,6)
         layout.addWidget(self.speed,2,2,1,1)
         layout.addWidget(self.accel,3,2,1,1)
@@ -55,6 +60,7 @@ class SensorDataWidget(QtGui.QWidget):
         self.ranges.setText(np.array_str(np.around(np.array(self.rangeVals[0],dtype = float),2))+'\n'+np.array_str(np.around(np.array(self.rangeVals[1],dtype = float),2)))
         self.speed.setText(str(self.speedVals[0]))
         self.accel.setText(str(self.accelVals[0]))
+        self.setFixedWidth(self.width()+30)
         
         
     def updateInterval(self, reset = False):

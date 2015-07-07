@@ -101,7 +101,7 @@ class ConfigDlg(QtGui.QDialog):
         
     def deleteConfig(self):
         #Maybe ask the user if they are sure they want to delete a configuration
-        self.configs.pop(str(self.configList.currentItem().text()))
+        self.configs.pop(QtCore.QString(unicode(self.configList.currentItem().text())))
         self.configList.takeItem(self.configList.row(self.configList.currentItem()))
         self.configNameEdit.setText('')
         for i in range(self.currentNumSensors):

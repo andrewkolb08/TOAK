@@ -24,6 +24,7 @@ class SpecWidget(QtGui.QWidget):
         bandwidthBoxLabel = QtGui.QLabel('Bandwidth: ')
         freqBoxLabel = QtGui.QLabel('Frequency Range: ')
         zoomLabel = QtGui.QLabel('Zoom In/Out: ')
+#        labelButton = QtGui.QPushButton('Label...')
         self.freqRangeBox = QtGui.QDoubleSpinBox()
         self.freqRangeBox.setRange(0.5,self.specgram.fs/2000)
         self.freqRangeBox.setSingleStep(0.5)
@@ -43,6 +44,7 @@ class SpecWidget(QtGui.QWidget):
         
         buttonLayout = QtGui.QHBoxLayout()
         buttonLayout.addStretch()
+#        buttonLayout.addWidget(labelButton)
         buttonLayout.addWidget(bandwidthBoxLabel)
         buttonLayout.addWidget(self.bandwidthBox)
         buttonLayout.addWidget(freqBoxLabel)
@@ -61,10 +63,11 @@ class SpecWidget(QtGui.QWidget):
         self.connect(zoomOutButton,QtCore.SIGNAL("clicked()"), self.zoomOut)
         self.connect(self.freqRangeBox,QtCore.SIGNAL("valueChanged(double)"), self.changeFreqRange) 
         self.connect(self.bandwidthBox,QtCore.SIGNAL("valueChanged(int)"), self.changeBandwidth)
+#        self.connect(labelButton, QtCore.SIGNAL("clicked()"), self.makeLabel)
         
-        self.setMinimumSize(200,200)
+        self.setMinimumSize(450,200)
         self.setMaximumHeight(350)
-        self.resize(250,300)
+        self.resize(450,300)
         self.zoomList = None
     
         
@@ -77,6 +80,13 @@ class SpecWidget(QtGui.QWidget):
         self.freqRangeBox.setValue(self.specgram.axes.get_ylim()[1]/1000)
         self.bandwidthBox.setValue(self.specgram.bandwidth)
         self.zoomList = [(0, self.specgram.timeLength)]
+#        self.specgram.axes.annotate('simple', xy=(0, 0),  xycoords='data',
+#                xytext=(20, 1000), size=8)
+                
+    def makeLabel(self):
+        if(self.specgram.linePos1 is None or self.specgram.linePos2 is None):
+            QtGui.QMessageBox.warning(self,'Invalid Interval', 'Please select an interval to label')
+        pass
         
     def changeFreqRange(self,value):
         newValue = value*1000

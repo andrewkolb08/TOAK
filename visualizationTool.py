@@ -41,7 +41,7 @@ class MainWindow(QtGui.QMainWindow):
         self.kinfilename =  None#"C:/Data/05_ENGL_F_words6_BPC.tsv"
         
         #We should go to QSettings to load the config list instead, but this will work for now.
-        #make qvariant to pyObject.. then make it a dict.  When yous ave it, wrap it in a tuple container and unlock with [0]        
+        #make qvariant to pyObject.. then make it a dict.  When you save it, wrap it in a tuple container and unlock with [0]        
         settings = QtCore.QSettings()
         self.configs = settings.value("savedConfig").toPyObject()
         self.selectConfig()   
@@ -366,6 +366,9 @@ class MainWindow(QtGui.QMainWindow):
             audiofile to match the kinematic file.  Try not to get too confused
             by all the nested for loops...
         """
+        progress = QtGui.QProgressDialog("Searching for Audio File...",QtCore.QString(), 0,0,parent = self)
+        progress.setMinimumDuration(250)
+
         (filename, _) = os.path.splitext(os.path.basename(kinfilename))
         pattern = filename.split('_BPC')[0] + '.wav'
         fullpath = os.path.dirname(kinfilename)
@@ -383,8 +386,10 @@ class MainWindow(QtGui.QMainWindow):
                         for files in desiredFile:
                             if pattern == files:
                                 audiofilename = os.path.join(filenames[0],files)
+                                progress.destroy()
                                 return audiofilename
         if audiofilename is None:
+            progress.destroy()
             return audiofilename
             
     def find(self,s, ch):
